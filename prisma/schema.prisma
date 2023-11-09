@@ -1,0 +1,142 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model countries {
+  id             Int       @id @default(autoincrement())
+  countryName    String    @db.VarChar(100)
+  iso3           String?   @db.Char(3)
+  numericCode    String?   @db.Char(3)
+  iso2           String?   @db.Char(2)
+  phoneCode      String?   @db.VarChar(255)
+  capital        String?   @db.VarChar(255)
+  currency       String?   @db.VarChar(255)
+  currencyName   String?   @db.VarChar(255)
+  currencySymbol String?   @db.VarChar(255)
+  currencyInUsed Boolean   @default(false)
+  tld            String?   @db.VarChar(255)
+  native         String?   @db.VarChar(255)
+  region         String?   @db.VarChar(255)
+  subRegion      String?   @db.VarChar(255)
+  timezones      String?   @db.Text
+  latitude       Decimal?  @db.Decimal(10, 8)
+  longitude      Decimal?  @db.Decimal(11, 8)
+  emoji          String?
+  emojiU         String?
+  createdAt      DateTime? @db.Timestamp(0)
+  updatedAt      DateTime  @default(now()) @db.Timestamp(0)
+  states         states[]
+}
+
+model states {
+  id          Int          @id @default(autoincrement())
+  areaName    String       @db.VarChar(255)
+  countryId   Int
+  countryCode String       @db.Char(2)
+  fipsCode    String?      @db.VarChar(255)
+  iso2        String?      @db.VarChar(255)
+  type        String?
+  latitude    Decimal?     @db.Decimal(10, 8)
+  longitude   Decimal?     @db.Decimal(11, 8)
+  createdAt   DateTime?    @db.Timestamp(0)
+  updatedAt   DateTime     @default(now()) @db.Timestamp(0)
+  countries   countries    @relation(fields: [countryId], references: [id], onUpdate: Restrict, map: "statesCountries")
+  userLogin   user_login[]
+
+  @@index([countryId], map: "statesCountries")
+}
+
+model user_role {
+  id          Int          @id @default(autoincrement())
+  userRole    String       @unique
+  roleName    String       @unique
+  description String?      @db.VarChar(255)
+  userLogin   user_login[]
+}
+
+model user_login {
+  id         Int            @id @default(autoincrement())
+  fullName   String
+  userRoleId Int
+  email      String         @unique
+  phone      String         @unique
+  password   String
+  address    String?        @db.Text
+  city       String?
+  stateId    Int?
+  active     Boolean?       @default(false)
+  createdAt  DateTime       @default(now()) @db.Timestamp(3)
+  lastLogin  DateTime       @default(now()) @db.Timestamp(3)
+  isDelete   Boolean?       @default(false)
+  userStates states?        @relation(fields: [stateId], references: [id], map: "userStates")
+  userRole   user_role      @relation(fields: [userRoleId], references: [id], map: "userRole")
+  avatar     login_avatars?
+
+  @@index([userRoleId], map: "userRole")
+  @@index([stateId], map: "userStates")
+}
+
+model login_avatars {
+  id         Int        @id @default(autoincrement())
+  userId     Int        @unique
+  fileName   String?    @db.VarChar(255)
+  url        String?    @db.VarChar(255)
+  size       Int?
+  uploadedAt DateTime   @default(now()) @db.Timestamp(3)
+  user       user_login @relation(fields: [userId], references: [id], map: "userAvatar")
+
+  @@index([userId], map: "userAvatar")
+}
+
+model categories {
+  id    Int     @id @default(autoincrement())
+  name  String
+  posts posts[]
+}
+
+model posts {
+  id         Int        @id @default(autoincrement())
+  name       String
+  slug       String?
+  overview   String?
+  published  Boolean?   @default(false)
+  categoryId Int
+  createdAt  DateTime   @default(now()) @db.Timestamp(3)
+  updatedAt  DateTime   @updatedAt @db.Timestamp(3)
+  category   categories @relation(fields: [categoryId], references: [id], map: "postCategory")
+
+  postImages    post_images[]
+  postThumbnail post_thumbnails?
+}
+
+model post_thumbnails {
+  id         Int      @id @default(autoincrement())
+  postId     Int      @unique
+  fileName   String?  @db.VarChar(255)
+  url        String?  @db.VarChar(255)
+  size       Int?
+  uploadedAt DateTime @default(now()) @db.Timestamp(3)
+  post       posts    @relation(fields: [postId], references: [id], map: "postThumbnail")
+
+  @@index([postId], map: "postThumbnail")
+}
+
+model post_images {
+  id         Int      @id @default(autoincrement())
+  postId     Int
+  fileName   String?  @db.VarChar(255)
+  url        String?  @db.VarChar(255)
+  size       Int?
+  uploadedAt DateTime @default(now()) @db.Timestamp(3)
+  post       posts    @relation(fields: [postId], references: [id], map: "post")
+
+  @@index([postId], map: "post")
+}

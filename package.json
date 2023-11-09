@@ -1,0 +1,40 @@
+{
+  "name": "fastify-prisma-api-template",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Raja Poudel <raja.poudel@prosent.ai>",
+  "license": "MIT",
+  "scripts": {
+    "dev:server": "nodemon --watch './**/*.ts' --exec 'ts-node' src/index.ts",
+    "clean": "rm -rf ./dist/* ",
+    "build": "tsc -p . ",
+    "start:prod": "node ./dist/src/index.js",
+    "postinstall": "prisma generate",
+    "db:init": "prisma migrate deploy",
+    "db:seed": "prisma db seed"
+  },
+  "dependencies": {
+    "@fastify/cors": "^8.3.0",
+    "@fastify/helmet": "^11.0.0",
+    "@prisma/client": "^5.2.0",
+    "axios": "^1.5.0",
+    "bcrypt": "^5.1.1",
+    "fastify": "^4.22.0",
+    "fastify-env": "^2.2.0",
+    "http": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/cors": "^2.8.13",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/morgan": "^1.9.5",
+    "@types/node": "^20.5.7",
+    "morgan": "^1.10.0",
+    "prisma": "^5.2.0",
+    "rimraf": "^5.0.1",
+    "ts-node": "^10.9.1",
+    "tsc": "^2.0.4",
+    "typescript": "^5.2.2"
+  }
+}
