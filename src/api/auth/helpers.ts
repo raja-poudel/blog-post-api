@@ -3,11 +3,11 @@ import { messages } from '../messages'
 import { checkPropertiesExist } from '../helpers'
 
 export const generateAccessToken = async (user: object) => {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3s' })
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '60s' })
 }
 
 export const generateRefreshToken = async (user: object) => {
-  return jwt.sign(user, `${process.env.REFRESH_TOKEN_SECRET}`, { expiresIn: '1y' })
+  return jwt.sign(user, `${process.env.REFRESH_TOKEN_SECRET}`, { expiresIn: '1y' })  //'1y'
 }
 
 export const verifyToken = async (request: any, reply: any) => {

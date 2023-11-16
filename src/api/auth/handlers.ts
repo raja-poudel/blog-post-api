@@ -31,6 +31,44 @@ export const handleSignIn = async (request: any, reply: any) => {
 
 }
 
+export const handleVerifyToken = async (request: any, reply: any) => {
+  try {
+    const accessToken = request.body.token
+    if (accessToken === null) {
+      reply.status(401).send(messages.unthorizedAccess)
+    }
+    jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, account) => {
+      if (err) {
+        reply.status(403).send(messages.forbiddenAccess)
+      } else {
+        reply.send({ statusCode: 200, accessToken })
+      }
+    })
+  } catch (error) {
+    reply.status(403).send(messages.forbiddenAccess)
+  }
+}
+
+export const handleVerifyTokenRefreshToken = async (request: any, reply: any) => {
+  try {
+    const refreshToken = request.body.token
+
+    if (refreshToken === null) {
+      reply.status(401).send(messages.unthorizedAccess)
+    }
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, account) => {
+      if (err) {
+        reply.status(403).send(messages.forbiddenAccess)
+      } else {
+        reply.send({ statusCode: 200 })
+      }
+    })
+  } catch (error) {
+    reply.status(403).send(messages.forbiddenAccess)
+  }
+
+}
+
 export const handleToken = async (request: any, reply: any) => {
   try {
     const refreshToken = request.body.token
